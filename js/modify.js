@@ -15,20 +15,56 @@ const save = document.querySelector("#save")
 
 
 async function fillForm() {
+
+    const response = await fetch(endPoint + id, {
+        headers: {
+            "Authorization": apiKey
+        }
+    })
+    const data = await response.json()
+
+    nameProduct.value = data.name
+    description.value = data.description
+    brand.value = data.brand
+    imageUrl.value = data.imageUrl
+    price.value = data.price
+}
+
+fillForm()
+
+save.addEventListener("click", updateProduct)
+
+async function updateProduct(e) {
     
     try {
+
+        e.preventDefault()
+        const listProduct = {
+            name: nameProduct.value,
+            description: description.value,
+            brand: brand.value,
+            imageUrl: imageUrl.value,
+            price: Number(price.value)
+        }
+    
         const response = await fetch(endPoint + id, {
+            method: 'PUT',
             headers: {
+                'Content-Type': 'application/json',
                 "Authorization": apiKey
-            }
+            },
+            body: JSON.stringify(listProduct)
         })
         const data = await response.json()
     
-        nameProduct.value = data.name
-        description.value = data.description
-        brand.value = data.brand
-        imageUrl.value = data.imageUrl
-        price.value = data.price
+        Swal.fire({
+            title: "Good job",
+            text: "Product created successfully",
+            icon: "success"
+        })
+        setTimeout(function () {
+            location.href = "./admin.html"
+        },3000)
 
     } catch (err) {
         Swal.fire({
@@ -36,42 +72,8 @@ async function fillForm() {
             text: "Something went wrong",
             icon: "error"
         });
-        setTimeout(function () {
-            location.href = "./admin.html"
-        },3000)
-    }
-    
-
 }
-
-fillForm()
-
-save.addEventListener("click",updateProduct)
-
-async function updateProduct(e){
-    e.preventDefault()
-
-    const listProduct = {
-        name: nameProduct.value,
-        description: description.value,
-        brand: brand.value,
-        imageUrl: imageUrl.value,
-        price: Number(price.value)
-    }
-
-    const response = await fetch(endPoint + id,{
-        method: 'PUT',
-        headers: {
-            "Authorization": apiKey,
-        },
-        body: JSON.stringify(listProduct)
-    })
-    const data = await response.json()
-
-    console.log(data);
     
-    alert("prodotto modificato con successo")
-    location.href = "./admin.html"
 }
 
 
